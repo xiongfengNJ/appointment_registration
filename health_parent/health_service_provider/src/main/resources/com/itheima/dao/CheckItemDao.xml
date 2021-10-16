@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.CheckItemDao">
+    <!--根据检查组id查询检查项信息-->
+    <select id="findCheckItemByCheckgroupId" resultType="com.itheima.pojo.CheckItem">
+        select *
+        from t_checkitem
+        where id
+                  in (select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{id})
+    </select>
+
+    <select id="findCheckItemById" resultType="com.itheima.pojo.CheckItem">
+        SELECT *
+        FROM t_checkitem
+        WHERE id IN (
+            select checkitem_id FROM t_checkgroup_checkitem WHERE checkgroup_id = #{id}
+        )
+    </select>
+
+    <insert id="add" parameterType="com.itheima.pojo.CheckItem">
+        INSERT INTO t_checkitem
+        VALUES (null, #{code}, #{name}, #{sex}, #{age}, #{price}, #{type}, #{attention}, #{remark})
+    </insert>
+    <update id="edit" parameterType="com.itheima.pojo.CheckItem">
+        UPDATE t_checkitem
+        set name      = #{name},
+            sex       = #{sex},
+            code      = #{code},
+            age       = #{age},
+            price     = #{price},
+            type      = #{type},
+            attention = #{attention},
+            remark    = #{remark}
+        where id = #{id}
+    </update>
+
+    <select id="selectByCondition" resultType="com.itheima.pojo.CheckItem">
+        SELECT * FROM t_checkitem
+        <if test="query != null and query.length > 0">
+            WHERE code LIKE CONCAT('%',#{query},'%') or name like CONCAT('%',#{query},'%')
+        </if>
+    </select>
+    <!--根据检查项id查询中间关系表-->
+    <select id="countCheckItemsById" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM t_checkgroup_checkitem
+        WHERE checkitem_id = #{checkItemId}
+    </select>
+    <select id="findById" resultType="com.itheima.pojo.CheckItem">
+        SELECT *
+        FROM t_checkitem
+        WHERE id = #{tmpId}
+    </select>
+    <select id="findAll" resultType="com.itheima.pojo.CheckItem">
+        SELECT *
+        FROM t_checkitem
+    </select>
+    <!--删除-->
+    <delete id="deleteById">
+        DELETE
+        FROM t_checkitem
+        WHERE id = #{id}
+    </delete>
+</mapper>
